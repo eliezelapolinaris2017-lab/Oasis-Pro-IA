@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>OASIS PRO IA – Dashboard</title>
+<style>
+  :root{
+    --bg:#0b1620;--bg2:#0f1f2b;--card:#122635;--text:#e9f0f5;--muted:#9fb3c3;
+    --brand:#1ea672;--line:#263948;--shadow:0 6px 20px rgba(0,0,0,.35);--radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #123149 0%, var(--bg) 45%, #081118 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif}
+  header{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:linear-gradient(180deg, rgba(10,22,32,.9), rgba(10,22,32,.75));backdrop-filter:blur(8px);z-index:5}
+  header img.logo{height:28px;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+  header h1{font-size:16px;font-weight:600;margin:0;letter-spacing:.3px;color:#a7d4ff}
+  .wrap{max-width:980px;margin:0 auto;padding:18px}
+  .menu{display:grid;gap:12px;margin:12px 0}
+  .menu .item{background:linear-gradient(180deg,#12293a,#0f2230);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);cursor:pointer}
+  .menu .item span{font-size:16px}
+  .menu .item small{color:var(--muted)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .card .hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .card .hd h3{margin:0;font-size:16px}
+  .card .bd{padding:16px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid #234257;background:linear-gradient(180deg,#142a3a,#0e1f2b);color:var(--text);cursor:pointer;transition:.15s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn.small{padding:8px 10px;border-radius:10px;font-size:13px}
+  .btn.brand{border-color:#0d3e31;background:linear-gradient(180deg,#0f3c2d,#0c2d23)}
+  .btn.danger{border-color:#4b1717;background:linear-gradient(180deg,#341214,#240d0e);color:#ffc6c6}
+  .btn.warn{border-color:#4b3612;background:linear-gradient(180deg,#3a2a0e,#2a1f0a);color:#ffd59b}
+  .pill{display:inline-block;background:#172534;border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:12px;color:var(--muted)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  input,select,textarea{width:100%;padding:10px 12px;background:#0e2130;border:1px solid #22394a;border-radius:10px;color:var(--text);outline:none}
+  textarea{min-height:90px;resize:vertical}
+  label{font-size:12px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse}
+  th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;font-size:13px}
+  th{color:#a0bfd6;font-weight:600}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+  .right{margin-left:auto}
+  .hide{display:none!important}
+  footer{padding:20px 0 26px;border-top:1px solid var(--line);text-align:center;color:#7fa0b4}
+
+  /* ------- IMPRESIÓN ELEGANTE ------- */
+  @media print{
+    header, #nav, .no-print, footer{display:none!important}
+    body{background:#fff;color:#000}
+    .print-sheet{display:block}
+  }
+  .print-sheet{display:none;background:#fff;color:#1a1a1a;padding:28px 28px 40px;font-family: ui-serif, Georgia, 'Times New Roman', serif}
+  .p-head{display:flex;align-items:center;justify-content:space-between}
+  .p-head .brand{display:flex;align-items:center;gap:14px}
+  .p-head .brand img{height:58px}
+  .p-head .biz{font-size:12px;color:#333;line-height:1.45}
+  .p-title{font-weight:800;font-size:22px;margin:18px 0 8px}
+  .p-sub{color:#555;font-size:12px;margin-bottom:14px}
+  .p-line{height:2px;background:linear-gradient(90deg,#0d2230,#4a6d86,#0d2230);opacity:.25;margin:10px 0 18px;border-radius:2px}
+  .p-table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .p-table th,.p-table td{border-bottom:1px solid #e6ebef;padding:8px 6px}
+  .p-total td{border-top:1px solid #d7dde2}
+  .p-notes{margin-top:12px;font-size:12.5px}
+  .p-footer{margin-top:26px;padding-top:12px;border-top:1px dashed #cdd7df;font-size:11.5px;color:#444;display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+
+<header id="nav">
+  <img class="logo" id="oasisLogoHeader" alt="Oasis Pro IA" src="data:image/svg+xml;utf8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='200' height='60'><text x='0' y='40' font-family='Arial' font-size='32' fill='%23a7d4ff'>OASIS PRO IA</text></svg>">
+  <h1>¿Qué deseas hacer?</h1>
+  <span class="right pill no-print">Dashboard</span>
+</header>
+
+<div class="wrap">
+
+  <!-- Menú -->
+  <div class="menu no-print" id="mainMenu">
+    <div class="item" onclick="showSection('diag')"><span>🧰 Diagnóstico</span><small>Buscar códigos de error</small></div>
+    <div class="item" onclick="showSection('agenda')"><span>🗓️ Agenda</span><small>Citas locales + Google Calendar</small></div>
+    <div class="item" onclick="showSection('quotes')"><span>📄 Cotizaciones</span><small>Crear, PDF, alojar (local)</small></div>
+    <div class="item" onclick="showSection('invoices')"><span>🧾 Facturas</span><small>Crear, PDF, alojar (local)</small></div>
+    <div class="item" onclick="showSection('analytics')"><span>📊 Rendimiento</span><small>Estadísticas</small></div>
+    <div class="item" onclick="showSection('settings')"><span>⚙️ Configuración</span><small>Logo, contactos, códigos</small></div>
+    <div class="item" onclick="window.open('https://eliezelapolinaris2017-lab.github.io/Nexus-Tools-PR/codes/','_blank')"><span>🔎 Buscar Códigos de Error</span><small>Enlace externo</small></div>
+  </div>
+
+  <!-- DIAGNÓSTICO -->
+  <section id="diag" class="card hide">
+    <div class="hd"><h3>🧰 Diagnóstico</h3><div class="row"><span class="pill">Base local</span><button class="btn small" onclick="backHome()">Volver</button></div></div>
+    <div class="bd">
+      <div class="row">
+        <div style="flex:2"><label>Búsqueda</label><input id="diagQuery" placeholder="Ej: Midea E1 o 'sensor'"/></div>
+        <button class="btn small brand" onclick="searchCodes()">Buscar</button>
+        <button class="btn small" onclick="listAllCodes()">Ver todos</button>
+      </div>
+      <div id="diagResults" class="mt12"></div>
+    </div>
+  </section>
+
+  <!-- AGENDA -->
+  <section id="agenda" class="card hide">
+    <div class="hd"><h3>🗓️ Agenda</h3><div class="row"><button class="btn small brand" onclick="openAddEvent()">Nueva cita</button><button class="btn small" onclick="backHome()">Volver</button></div></div>
+    <div class="bd">
+      <div class="toolbar">
+        <input id="agendaFilter" placeholder="Filtrar por cliente, servicio o fecha (aaaa-mm-dd)"/>
+        <button class="btn small" onclick="renderEvents()">Aplicar</button>
+        <span class="pill right" id="agendaCount">0 citas</span>
+      </div>
+      <div id="agendaTable"></div>
+    </div>
+  </section>
+
+  <!-- COTIZACIONES -->
+  <section id="quotes" class="card hide">
+    <div class="hd"><h3>📄 Cotizaciones</h3><div class="row"><button class="btn small brand" onclick="openDocForm('quote')">Nueva</button><button class="btn small" onclick="backHome()">Volver</button></div></div>
+    <div class="bd"><div id="quotesTable"></div></div>
+  </section>
+
+  <!-- FACTURAS -->
+  <section id="invoices" class="card hide">
+    <div class="hd"><h3>🧾 Facturas</h3><div class="row"><button class="btn small brand" onclick="openDocForm('invoice')">Nueva</button><button class="btn small" onclick="backHome()">Volver</button></div></div>
+    <div class="bd"><div id="invoicesTable"></div></div>
+  </section>
+
+  <!-- RENDIMIENTO -->
+  <section id="analytics" class="card hide">
+    <div class="hd"><h3>📊 Rendimiento</h3><div class="row"><button class="btn small" onclick="recomputeAnalytics()">Actualizar</button><button class="btn small" onclick="backHome()">Volver</button></div></div>
+    <div class="bd">
+      <div id="analyticsSummary"></div>
+    </div>
+  </section>
+
+  <!-- CONFIGURACIÓN -->
+  <section id="settings" class="card hide">
+    <div class="hd"><h3>⚙️ Configuración</h3><div class="row"><button class="btn small" onclick="backHome()">Volver</button></div></div>
+    <div class="bd">
+      <h4>Identidad de negocio (Global)</h4>
+      <div class="row">
+        <div style="flex:1">
+          <label>Logo</label>
+          <input type="file" accept="image/*" id="logoInput" onchange="handleLogo(event)"/>
+          <div class="row" style="margin-top:8px"><img id="logoPreview" style="max-width:190px;max-height:90px" alt=""></div>
+        </div>
+        <div style="flex:2">
+          <label>Nombre</label><input id="bizName" placeholder="Oasis Air Cleaner Services LLC">
+          <label>Teléfono</label><input id="bizPhone" placeholder="(787) 664-3079">
+          <label>Sitio web</label><input id="bizWeb" placeholder="www.oasisservicespr.com">
+          <label>Dirección</label><input id="bizAddr" placeholder="Trujillo Alto, Puerto Rico 00976">
+          <div class="row" style="margin-top:8px"><button class="btn brand small" onclick="saveBusiness()">Guardar</button></div>
+        </div>
+      </div>
+
+      <h4 style="margin-top:18px">Contactos</h4>
+      <div id="contactsTable"></div>
+
+      <h4 style="margin-top:18px">Códigos de error</h4>
+      <div id="codesCount" class="pill">0 códigos</div>
+    </div>
+  </section>
+
+  <!-- MODAL -->
+  <div id="modal" class="card hide" style="position:fixed;inset:auto 10px 10px 10px;max-width:920px;margin:auto;background:#0e1f2b;z-index:6">
+    <div class="hd"><h3 id="modalTitle">Modal</h3><button class="btn small" onclick="closeModal()">✕</button></div>
+    <div class="bd" id="modalBody"></div>
+  </div>
+
+  <!-- VISTA IMPRIMIBLE -->
+  <div id="printView" class="print-sheet"></div>
+
+  <footer class="no-print">Todos los derechos reservados © <b>Nexus Tools PR</b></footer>
+</div>
+
+<script>
+/* ===== Util ===== */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const LS={get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
+const uid=(p='id')=>p+'_'+Math.random().toString(36).slice(2,9);
+const fmtMoney=n=>(+n||0).toLocaleString('es-PR',{style:'currency',currency:'USD'});
+function esc(s){return (s??'').toString().replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+
+/* ===== State inicial ===== */
+const DEF_BIZ={name:"Oasis Air Cleaner Services LLC",phone:"(787) 664-3079",web:"www.oasisservicespr.com",addr:"Trujillo Alto, Puerto Rico 00976",logo:null};
+if(!LS.get('biz')) LS.set('biz',DEF_BIZ);
+['contacts','codes','events','quotes','invoices'].forEach(k=>{if(!LS.get(k)) LS.set(k,[])});
+(function init(){
+  const b=LS.get('biz'); if(b.logo) $('#oasisLogoHeader').src=b.logo;
+  loadBizToForm(); renderContacts(); updateCounts(); renderDocsTable('quote'); renderDocsTable('invoice'); renderEvents(); recomputeAnalytics();
+})();
+
+/* ===== Navegación ===== */
+function showSection(id){$$('#diag,#agenda,#quotes,#invoices,#analytics,#settings').forEach(e=>e.classList.add('hide'));$('#'+id).classList.remove('hide');}
+function backHome(){showSection('mainMenu')}
+
+/* ===== Configuración global ===== */
+function handleLogo(ev){const f=ev.target.files?.[0]; if(!f) return; const r=new FileReader(); r.onload=e=>{const b=LS.get('biz'); b.logo=e.target.result; LS.set('biz',b); $('#logoPreview').src=b.logo; $('#oasisLogoHeader').src=b.logo;}; r.readAsDataURL(f);}
+function saveBusiness(){const b=LS.get('biz'); b.name=$('#bizName').value; b.phone=$('#bizPhone').value; b.web=$('#bizWeb').value; b.addr=$('#bizAddr').value; LS.set('biz',b); alert('Guardado.');}
+function loadBizToForm(){const b=LS.get('biz'); $('#bizName').value=b.name; $('#bizPhone').value=b.phone; $('#bizWeb').value=b.web; $('#bizAddr').value=b.addr; if(b.logo) $('#logoPreview').src=b.logo;}
+function updateCounts(){ $('#codesCount').innerText=`${LS.get('codes',[]).length} códigos` }
+
+/* ===== Diagnóstico (mínimo para demo) ===== */
+function searchCodes(){/* … (igual que antes) … */}
+function listAllCodes(){/* … */}
+
+/* ===== Agenda (mínimo para demo) ===== */
+function renderEvents(){const list=LS.get('events',[]); $('#agendaCount').innerText=list.length+' citas'; $('#agendaTable').innerHTML=list.length?'<div class="pill">Citas guardadas: '+list.length+'</div>':'<div>No hay citas.</div>';}
+
+/* ===== Contactos (solo visual simple para este ajuste) ===== */
+function renderContacts(){const list=LS.get('contacts',[]); if(!list.length){$('#contactsTable').innerHTML='<div class="pill">No hay contactos</div>'; return;} let h='<table><thead><tr><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Dirección</th></tr></thead><tbody>'; list.forEach(c=>{h+=`<tr><td>${esc(c.nombre||c.name||'')}</td><td>${esc(c.telefono||'')}</td><td>${esc(c.email||'')}</td><td>${esc(c.direccion||'')}</td></tr>`}); h+='</tbody></table>'; $('#contactsTable').innerHTML=h;}
+
+/* ===== Cotizaciones/Facturas ===== */
+function openDocForm(kind,id=null){
+  const doc = id ? LS.get(kind+'s',[]).find(x=>x.id===id) : null;
+  const useBiz = doc ? !!doc.useBizFooter : true;
+  const F = doc?.footer || {};
+  $('#modalTitle').innerText=(id?'Editar ':'Nueva ')+(kind==='quote'?'cotización':'factura');
+  $('#modalBody').innerHTML = `
+    <div class="row">
+      <input id="docTitle" placeholder="Título" value="${esc(doc?.title || (kind==='quote'?'Cotización':'Factura'))}">
+      <input id="docNumber" placeholder="${kind==='quote'?'#Cotización':'#Factura'}" value="${esc(doc?.number||'')}">
+    </div>
+
+    <div class="row" style="margin-top:8px">
+      <label style="display:flex;gap:8px;align-items:center">
+        <input type="radio" name="fmode" value="biz" ${useBiz?'checked':''} onchange="toggleFooterMode(true)"> Usar datos globales
+      </label>
+      <label style="display:flex;gap:8px;align-items:center">
+        <input type="radio" name="fmode" value="custom" ${!useBiz?'checked':''} onchange="toggleFooterMode(false)"> Personalizar este documento
+      </label>
+    </div>
+
+    <div id="footerCustom" class="${useBiz?'hide':''}" style="margin-top:8px">
+      <div class="row">
+        <div style="flex:1">
+          <label>Logo del documento</label>
+          <input type="file" accept="image/*" id="docLogoInput" onchange="handleDocLogo(event)"/>
+          <div class="row" style="margin-top:6px"><img id="docLogoPreview" style="max-width:160px;max-height:80px" src="${F.logo||''}" alt=""></div>
+        </div>
+        <div style="flex:2">
+          <label>Nombre</label><input id="fName" value="${esc(F.name||'')}">
+          <label>Teléfono</label><input id="fPhone" value="${esc(F.phone||'')}">
+          <label>Sitio web</label><input id="fWeb" value="${esc(F.web||'')}">
+          <label>Dirección</label><input id="fAddr" value="${esc(F.addr||'')}">
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <button class="btn small brand" onclick="saveDoc('${kind}','${id||''}')">Guardar</button>
+    </div>`;
+  $('#modal').classList.remove('hide');
+  // guardar logo temporal en dataset
+  $('#docLogoInput') && ($('#docLogoInput').dataset.img = F.logo||'');
+}
+function toggleFooterMode(useBiz){ const el=$('#footerCustom'); if(useBiz) el.classList.add('hide'); else el.classList.remove('hide'); }
+function handleDocLogo(ev){ const f=ev.target.files?.[0]; if(!f) return; const r=new FileReader(); r.onload=e=>{ $('#docLogoPreview').src=e.target.result; ev.target.dataset.img=e.target.result; }; r.readAsDataURL(f); }
+
+function saveDoc(kind,id){
+  const all=LS.get(kind+'s',[]);
+  const useBiz = document.querySelector('input[name="fmode"][value="biz"]').checked;
+  const footer = useBiz ? null : {
+    logo: ($('#docLogoInput')?.dataset.img)||'',
+    name: $('#fName').value||'',
+    phone: $('#fPhone').value||'',
+    web: $('#fWeb').value||'',
+    addr: $('#fAddr').value||'',
+  };
+  const doc={
+    id: id || uid(kind),
+    kind,
+    createdAt: Date.now(),
+    title: $('#docTitle').value || (kind==='quote'?'Cotización':'Factura'),
+    number: $('#docNumber').value || '',
+    items:[{desc:'Servicio',qty:1,price:0}],
+    sub:0,tax:11.5,total:0,
+    useBizFooter: useBiz,
+    footer
+  };
+  const i=all.findIndex(x=>x.id===doc.id); if(i>=0) all[i]=doc; else all.push(doc);
+  LS.set(kind+'s',all); closeModal(); renderDocsTable(kind);
+}
+
+function renderDocsTable(kind){
+  const list=LS.get(kind+'s',[]); const target=(kind==='quote')? '#quotesTable':'#invoicesTable';
+  if(!list.length){ $(target).innerHTML=`<div>No hay ${kind==='quote'?'cotizaciones':'facturas'}.</div>`; return; }
+  let html=`<table><thead><tr><th>Fecha</th><th>#</th><th>Título</th><th>Total</th><th></th></tr></thead><tbody>`;
+  list.sort((a,b)=>b.createdAt-a.createdAt).forEach(d=>{
+    html += `<tr>
+      <td>${new Date(d.createdAt).toLocaleDateString()}</td>
+      <td>${esc(d.number)}</td>
+      <td>${esc(d.title)}</td>
+      <td>${fmtMoney(d.total)}</td>
+      <td class="right">
+        <button class="btn small" onclick="openDocForm('${kind}','${d.id}')">Editar</button>
+        <button class="btn small" onclick="openDocPDF('${kind}','${d.id}')">Ver/Exportar PDF</button>
+        <button class="btn small danger" onclick="deleteDoc('${kind}','${d.id}')">Eliminar</button>
+      </td></tr>`;
+  });
+  html+='</tbody></table>'; $(target).innerHTML=html;
+}
+function deleteDoc(kind,id){ if(!confirm('Eliminar?')) return; LS.set(kind+'s',LS.get(kind+'s',[]).filter(x=>x.id!==id)); renderDocsTable(kind); }
+
+/* ===== PDF elegante con pie/logo por documento ===== */
+function openDocPDF(kind,id){
+  const d = LS.get(kind+'s',[]).find(x=>x.id===id); if(!d) return;
+  const biz = LS.get('biz');
+  const F = d.useBizFooter ? biz : {...biz, ...d.footer};     // merge sencillo
+  const logoTag = (d.useBizFooter ? biz.logo : d.footer?.logo) ? `<img src="${d.useBizFooter?biz.logo:d.footer.logo}" alt="logo">` : '';
+  const title = d.title || (kind==='quote'?'Cotización':'Factura');
+
+  // Demo de ítems simples si están vacíos
+  const items = d.items?.length ? d.items : [{desc:'Servicio',qty:1,price:0}];
+  const sub = items.reduce((a,b)=>a+b.qty*b.price,0);
+  const tax = (d.tax??11.5); const total = sub*(1+tax/100);
+
+  const rows = items.map(x=>`<tr><td>${esc(x.desc)}</td><td>${x.qty}</td><td>${fmtMoney(x.price)}</td><td>${fmtMoney(x.qty*x.price)}</td></tr>`).join('');
+
+  const html = `
+    <div class="p-head">
+      <div class="brand">${logoTag}<div class="biz">
+        <div><b>${esc(F.name||biz.name)}</b></div>
+        <div>${esc(F.phone||biz.phone)} · ${esc(F.web||biz.web)}</div>
+        <div>${esc(F.addr||biz.addr)}</div>
+      </div></div>
+      <div class="p-sub">
+        <div><b>${title} ${d.number?('#'+esc(d.number)):""}</b></div>
+        <div>${new Date(d.createdAt).toLocaleDateString()}</div>
+      </div>
+    </div>
+
+    <div class="p-line"></div>
+
+    <table class="p-table">
+      <thead><tr><th align="left">Descripción</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr class="p-total"><td colspan="3" align="right"><b>Subtotal</b></td><td>${fmtMoney(sub)}</td></tr>
+        <tr><td colspan="3" align="right">IVU ${tax}%</td><td>${fmtMoney(sub*(tax/100))}</td></tr>
+        <tr><td colspan="3" align="right"><b>Total</b></td><td><b>${fmtMoney(total)}</b></td></tr>
+      </tfoot>
+    </table>
+
+    ${d.notes?`<div class="p-notes"><b>Notas:</b> ${esc(d.notes)}</div>`:''}
+
+    <div class="p-footer">
+      <span>Gracias por su confianza. Todos los trabajos se realizan según términos y condiciones acordados.</span>
+      <span>Formas de pago: ATH Móvil, cheque, efectivo, transferencia, tarjetas.</span>
+    </div>
+  `;
+  $('#printView').innerHTML = html;
+  window.print();
+}
+
+/* ===== Fin ===== */
+</script>
+</body>
+</html>
