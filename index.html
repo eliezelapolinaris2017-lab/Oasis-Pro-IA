@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>OASIS PRO IA – Dashboard</title>
+<style>
+  :root{
+    --bg:#0b1620;
+    --bg2:#0f1f2b;
+    --card:#122635;
+    --text:#e9f0f5;
+    --muted:#9fb3c3;
+    --brand:#1ea672;
+    --danger:#ff5c5c;
+    --warning:#ffb020;
+    --line:#263948;
+    --shadow: 0 6px 20px rgba(0,0,0,.35);
+    --radius:14px;
+    --radius-sm:12px;
+    --pad:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #123149 0%, var(--bg) 45%, #081118 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif}
+  header{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:linear-gradient(180deg, rgba(10,22,32,.9), rgba(10,22,32,.75));backdrop-filter:blur(8px);z-index:5}
+  header img.logo{height:28px;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+  header h1{font-size:16px;font-weight:600;margin:0;letter-spacing:.3px;color:#a7d4ff}
+  .wrap{max-width:980px;margin:0 auto;padding:18px}
+  h2.section-title{font-size:22px;margin:8px 0 14px}
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  @media (min-width:720px){ .grid{grid-template-columns:1fr 1fr} }
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .card .hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .card .hd h3{margin:0;font-size:16px}
+  .card .bd{padding:16px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid #234257;background:linear-gradient(180deg,#142a3a,#0e1f2b);color:var(--text);cursor:pointer;box-shadow:0 2px 0 #091620;transition:.15s;user-select:none}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
+  .btn.brand{border-color:#0d3e31;background:linear-gradient(180deg,#0f3c2d,#0c2d23)}
+  .btn.warn{border-color:#4b3612;background:linear-gradient(180deg,#3a2a0e,#2a1f0a);color:#ffd59b}
+  .btn.danger{border-color:#4b1717;background:linear-gradient(180deg,#341214,#240d0e);color:#ffc6c6}
+  .btn.small{padding:8px 10px;border-radius:10px;font-size:13px}
+  .btn.ghost{background:transparent}
+  .pill{display:inline-block;background:#172534;border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:12px;color:var(--muted)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  input,select,textarea{width:100%;padding:10px 12px;background:#0e2130;border:1px solid #22394a;border-radius:10px;color:var(--text);outline:none}
+  textarea{min-height:90px;resize:vertical}
+  label{font-size:12px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse}
+  th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;font-size:13px}
+  th{color:#a0bfd6;font-weight:600}
+  tfoot td{border-top:1px solid var(--line)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+  .right{margin-left:auto}
+  .center{text-align:center}
+  .empty{color:var(--muted);font-size:14px;padding:8px 0}
+  .divider{height:1px;background:var(--line);margin:12px 0}
+  .menu{display:grid;gap:12px;margin:12px 0}
+  .menu .item{background:linear-gradient(180deg,#12293a,#0f2230);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);cursor:pointer}
+  .menu .item span{font-size:16px}
+  .menu .item small{color:var(--muted)}
+  .hide{display:none!important}
+  canvas{width:100%;height:260px;background:#0f1f2b;border:1px solid var(--line);border-radius:12px}
+  footer{padding:20px 0 26px;border-top:1px solid var(--line);text-align:center;color:#7fa0b4}
+  footer img{height:22px;opacity:.9;vertical-align:middle}
+  /* Vista imprimible (PDF) */
+  @media print{
+    header, #nav, .no-print, footer{display:none!important}
+    body{background:#fff;color:#000}
+    .print-sheet{display:block}
+  }
+  .print-sheet{display:none;background:#fff;color:#000;padding:24px;font-family:Georgia, 'Times New Roman', serif}
+  .brand-head{display:flex;align-items:center;gap:14px}
+  .brand-head img{height:40px}
+  .brand-head .biz{font-size:14px;color:#333}
+  .doc-h1{font-size:18px;margin:8px 0 16px;font-weight:700}
+  .muted{color:var(--muted)}
+  .mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt24{margin-top:24px}
+</style>
+</head>
+<body>
+
+<header id="nav">
+  <img class="logo" id="oasisLogoHeader" alt="Oasis Pro IA" src="data:image/svg+xml;utf8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='200' height='60'><text x='0' y='40' font-family='Arial' font-size='32' fill='%23a7d4ff'>OASIS PRO IA</text></svg>">
+  <h1>¿Qué deseas hacer?</h1>
+  <span class="right pill no-print">Dashboard</span>
+</header>
+
+<div class="wrap">
+
+  <!-- Menú principal -->
+  <div class="menu no-print" id="mainMenu">
+    <div class="item" onclick="showSection('diag')"><span>🧰 Diagnóstico</span><small>Buscar códigos de error</small></div>
+    <div class="item" onclick="showSection('agenda')"><span>🗓️ Agenda</span><small>Citas locales + Google Calendar</small></div>
+    <div class="item" onclick="showSection('quotes')"><span>📄 Cotizaciones</span><small>Crear, PDF, alojar (local)</small></div>
+    <div class="item" onclick="showSection('invoices')"><span>🧾 Facturas</span><small>Crear, PDF, alojar (local)</small></div>
+    <div class="item" onclick="showSection('analytics')"><span>📊 Rendimiento</span><small>Estadísticas</small></div>
+    <div class="item" onclick="showSection('settings')"><span>⚙️ Configuración</span><small>Logo, contactos, códigos</small></div>
+    <div class="item" onclick="window.open('https://eliezelapolinaris2017-lab.github.io/Nexus-Tools-PR/codes/','_blank')"><span>🔎 Buscar Códigos de Error</span><small>Enlace externo</small></div>
+  </div>
+
+  <!-- DIAGNÓSTICO -->
+  <section id="diag" class="card hide">
+    <div class="hd"><h3>🧰 Diagnóstico</h3><div class="row"><span class="pill">Base local</span><button class="btn small ghost" onclick="backHome()">Volver</button></div></div>
+    <div class="bd">
+      <div class="row">
+        <div style="flex:2">
+          <label>Búsqueda (marca, código o palabra clave)</label>
+          <input id="diagQuery" placeholder="Ej: Midea E1 o 'sensor'"/>
+        </div>
+        <button class="btn brand small" onclick="searchCodes()">Buscar</button>
+        <button class="btn small" onclick="listAllCodes()">Ver todos</button>
+      </div>
+      <div id="diagResults" class="mt12"></div>
+      <div class="mt16 muted">Carga o edita los códigos en <b>Configuración → Códigos</b>.</div>
+    </div>
+  </section>
+
+  <!-- AGENDA -->
+  <section id="agenda" class="card hide">
+    <div class="hd"><h3>🗓️ Agenda</h3><div class="row"><button class="btn small brand" onclick="openAddEvent()">Nueva cita</button><button class="btn small ghost" onclick="backHome()">Volver</button></div></div>
+    <div class="bd">
+      <div class="toolbar">
+        <input id="agendaFilter" placeholder="Filtrar por cliente, servicio o fecha (aaaa-mm-dd)"/>
+        <button class="btn small" onclick="renderEvents()">Aplicar</button>
+        <span class="pill right" id="agendaCount">0 citas</span>
+      </div>
+      <div id="agendaTable"></div>
+    </div>
+  </section>
+
+  <!-- COTIZACIONES -->
+  <section id="quotes" class="card hide">
+    <div class="hd"><h3>📄 Cotizaciones</h3><div class="row"><button class="btn small brand" onclick="openDocForm('quote')">Nueva</button><button class="btn small ghost" onclick="backHome()">Volver</button></div></div>
+    <div class="bd">
+      <div id="quotesTable"></div>
+    </div>
+  </section>
+
+  <!-- FACTURAS -->
+  <section id="invoices" class="card hide">
+    <div class="hd"><h3>🧾 Facturas</h3><div class="row"><button class="btn small brand" onclick="openDocForm('invoice')">Nueva</button><button class="btn small ghost" onclick="backHome()">Volver</button></div></div>
+    <div class="bd">
+      <div id="invoicesTable"></div>
+    </div>
+  </section>
+
+  <!-- RENDIMIENTO -->
+  <section id="analytics" class="card hide">
+    <div class="hd"><h3>📊 Rendimiento</h3><div class="row"><button class="btn small" onclick="recomputeAnalytics()">Actualizar</button><button class="btn small ghost" onclick="backHome()">Volver</button></div></div>
+    <div class="bd">
+      <div class="grid">
+        <div class="card">
+          <div class="hd"><h3>Resumen</h3></div>
+          <div class="bd" id="analyticsSummary"></div>
+        </div>
+        <div class="card">
+          <div class="hd"><h3>Tendencias (últimos 12 meses)</h3></div>
+          <div class="bd"><canvas id="chart1" width="480" height="260"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONFIGURACIÓN -->
+  <section id="settings" class="card hide">
+    <div class="hd"><h3>⚙️ Configuración</h3><div class="row"><button class="btn small ghost" onclick="backHome()">Volver</button></div></div>
+    <div class="bd">
+      <h4>Identidad de negocio</h4>
+      <div class="grid">
+        <div class="card">
+          <div class="hd"><h3>Logo</h3></div>
+          <div class="bd">
+            <input type="file" accept="image/*" id="logoInput" onchange="handleLogo(event)"/>
+            <div class="mt12"><img id="logoPreview" alt="logo" style="max-width:180px;max-height:90px"/></div>
+            <div class="mt8"><button class="btn small" onclick="clearLogo()">Quitar logo</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="hd"><h3>Datos de pie de documento</h3></div>
+          <div class="bd">
+            <label>Nombre de negocio</label><input id="bizName" placeholder="Oasis Air Cleaner Services LLC">
+            <label>Teléfono</label><input id="bizPhone" placeholder="(787) 664-3079">
+            <label>Sitio web</label><input id="bizWeb" placeholder="www.oasisservicespr.com">
+            <label>Dirección</label><input id="bizAddr" placeholder="Trujillo Alto, Puerto Rico 00976">
+            <div class="mt8"><button class="btn small brand" onclick="saveBusiness()">Guardar</button></div>
+          </div>
+        </div>
+      </div>
+
+      <h4 class="mt16">Contactos</h4>
+      <div class="grid">
+        <div class="card">
+          <div class="hd"><h3>Importar CSV/JSON</h3></div>
+          <div class="bd">
+            <input type="file" accept=".csv,.json" id="contactsFile" onchange="importContacts(event)"/>
+            <div class="mt8 muted">CSV con encabezados: nombre,telefono,email,direccion</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="hd"><h3>Agregar manual</h3></div>
+          <div class="bd">
+            <div class="row">
+              <input id="cName" placeholder="Nombre">
+              <input id="cPhone" placeholder="Teléfono">
+            </div>
+            <div class="row mt8">
+              <input id="cEmail" placeholder="Email">
+              <input id="cAddr" placeholder="Dirección">
+            </div>
+            <div class="mt8"><button class="btn small brand" onclick="addContact()">Añadir</button></div>
+          </div>
+        </div>
+      </div>
+      <div id="contactsTable" class="mt12"></div>
+
+      <h4 class="mt16">Códigos de error</h4>
+      <div class="grid">
+        <div class="card">
+          <div class="hd"><h3>Importar CSV/JSON</h3></div>
+          <div class="bd">
+            <input type="file" accept=".csv,.json" id="codesFile" onchange="importCodes(event)"/>
+            <div class="mt8 muted">Campos: marca,codigo,descripcion,solucion,tipo_falla,nivel,nota</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="hd"><h3>Añadir manual</h3></div>
+          <div class="bd">
+            <div class="row">
+              <input id="mBrand" placeholder="Marca">
+              <input id="mCode" placeholder="Código">
+            </div>
+            <textarea id="mDesc" placeholder="Descripción"></textarea>
+            <textarea id="mFix" placeholder="Solución"></textarea>
+            <div class="row">
+              <input id="mType" placeholder="Tipo de falla">
+              <input id="mLevel" placeholder="Nivel">
+              <input id="mNote" placeholder="Nota">
+            </div>
+            <div class="mt8"><button class="btn small brand" onclick="addCode()">Añadir código</button></div>
+          </div>
+        </div>
+      </div>
+      <div id="codesCount" class="mt12 pill">0 códigos cargados</div>
+
+    </div>
+  </section>
+
+  <!-- MODAL GENÉRICO -->
+  <div id="modal" class="card hide" style="position:fixed;inset:auto 10px 10px 10px;max-width:920px;margin:auto;background:#0e1f2b;z-index:6">
+    <div class="hd"><h3 id="modalTitle">Modal</h3><button class="btn small ghost" onclick="closeModal()">✕</button></div>
+    <div class="bd" id="modalBody"></div>
+  </div>
+
+  <!-- VISTA IMPRIMIBLE -->
+  <div id="printView" class="print-sheet"></div>
+
+  <footer class="no-print">
+    <div class="center">Todos los derechos reservados © <b>Nexus Tools PR</b></div>
+    <div class="mt8"><img src="data:image/svg+xml;utf8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' width='140' height='30'><text x='0' y='20' font-family='Arial' font-size='18' fill='%23b6cde0'>Nexus Tools PR</text></svg>" alt="Nexus"/></div>
+  </footer>
+
+</div>
+
+<script>
+/* ========= UTILIDADES ========= */
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+const LS = {
+  get:(k,def)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(e){return def}},
+  set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
+};
+const fmtMoney = n => (Number(n)||0).toLocaleString('es-PR',{style:'currency',currency:'USD'});
+const uid = (p='id') => p+'_'+Math.random().toString(36).slice(2,9);
+
+/* ========= NAVEGACIÓN ========= */
+function showSection(id){
+  $$('#diag, #agenda, #quotes, #invoices, #analytics, #settings').forEach(e=>e.classList.add('hide'));
+  $('#'+id).classList.remove('hide');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function backHome(){
+  $$('#diag, #agenda, #quotes, #invoices, #analytics, #settings').forEach(e=>e.classList.add('hide'));
+  $('#mainMenu').scrollIntoView({behavior:'smooth'});
+}
+
+/* ========= DATOS INICIALES ========= */
+const DEF_BIZ = {name:"Oasis Air Cleaner Services LLC", phone:"(787) 664-3079", web:"www.oasisservicespr.com", addr:"Trujillo Alto, Puerto Rico 00976", logo:null};
+if(!LS.get('biz')) LS.set('biz', DEF_BIZ);
+if(!LS.get('contacts')) LS.set('contacts', []);
+if(!LS.get('codes')) LS.set('codes', [
+  {marca:"Midea", codigo:"E1", descripcion:"Falla de comunicación entre UI y UE", solucion:"Revisar cableado, conectores y tarjeta exterior/interior", tipo_falla:"Comunicación", nivel:"Medio", nota:"Verificar 5V y 12V"},
+  {marca:"Gree", codigo:"H6", descripcion:"Motor del ventilador interior bloqueado", solucion:"Inspeccionar motor, capacitor y tarjeta", tipo_falla:"Motor", nivel:"Medio", nota:""}
+]);
+if(!LS.get('events')) LS.set('events', []);
+if(!LS.get('quotes')) LS.set('quotes', []);
+if(!LS.get('invoices')) LS.set('invoices', []);
+
+/* ========= HEADER LOGO ========= */
+(function(){
+  const logo = LS.get('biz').logo;
+  if(logo) $('#oasisLogoHeader').src = logo;
+  updateCounts();
+  renderContacts();
+  renderCodesCount();
+  renderDocsTable('quote');
+  renderDocsTable('invoice');
+  renderEvents();
+  recomputeAnalytics();
+  loadBizToForm();
+})();
+
+/* ========= DIAGNÓSTICO ========= */
+function searchCodes(){
+  const q = ($('#diagQuery').value||'').trim().toLowerCase();
+  const list = LS.get('codes',[]);
+  const out = list.filter(x=>{
+    return [x.marca,x.codigo,x.descripcion,x.solucion,x.tipo_falla,x.nota].join(' ').toLowerCase().includes(q);
+  });
+  renderDiagResults(out, q);
+}
+function listAllCodes(){ renderDiagResults(LS.get('codes',[]), ''); }
+function renderDiagResults(arr, q){
+  const box = $('#diagResults');
+  if(!arr.length){ box.innerHTML = `<div class="empty">Sin resultados ${q?`para "<b>${q}</b>"`:''}. Carga códigos en Configuración.</div>`; return;}
+  let html = `<table><thead><tr><th>Marca</th><th>Código</th><th>Descripción</th><th>Solución</th><th>Tipo</th><th>Nivel</th><th>Nota</th></tr></thead><tbody>`;
+  arr.forEach(r=>{
+    html+=`<tr><td>${esc(r.marca)}</td><td><b>${esc(r.codigo)}</b></td><td>${esc(r.descripcion)}</td><td>${esc(r.solucion)}</td><td>${esc(r.tipo_falla||'')}</td><td>${esc(r.nivel||'')}</td><td>${esc(r.nota||'')}</td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  box.innerHTML = html;
+}
+function esc(s){return (s??'').toString().replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[m]))}
+
+/* ========= AGENDA ========= */
+function openAddEvent(){
+  const id = uid('evt');
+  $('#modalTitle').innerText = 'Nueva cita';
+  $('#modalBody').innerHTML = `
+    <div class="row">
+      <select id="evtContact">${LS.get('contacts',[]).map(c=>`<option value="${c.id}">${esc(c.nombre||c.name||'Sin nombre')} (${esc(c.telefono||'')})</option>`).join('')}</select>
+      <input id="evtTitle" placeholder="Servicio (ej: Mantenimiento mini split)">
+    </div>
+    <div class="row mt8">
+      <input type="date" id="evtDate">
+      <input type="time" id="evtTime">
+      <input id="evtDuration" type="number" min="15" step="15" value="60" placeholder="Duración (min)">
+    </div>
+    <textarea id="evtNotes" class="mt8" placeholder="Notas"></textarea>
+    <div class="mt12 row">
+      <button class="btn brand" onclick="saveEvent('${id}')">Guardar</button>
+      <span class="pill">Se guardará localmente y podrás abrir Google Calendar</span>
+    </div>`;
+  $('#modal').classList.remove('hide');
+}
+function saveEvent(id){
+  const contacts = LS.get('contacts',[]);
+  const c = contacts.find(x=>x.id===$('#evtContact').value) || {};
+  const date = $('#evtDate').value, time=$('#evtTime').value;
+  if(!date || !time){ alert('Fecha y hora son obligatorias'); return;}
+  const obj = {
+    id, contactId: c.id||null, cliente: c.nombre||c.name||'Sin nombre',
+    telefono:c.telefono||'', email:c.email||'', direccion:c.direccion||'',
+    title: $('#evtTitle').value||'Cita',
+    date, time, duration: parseInt($('#evtDuration').value||60,10),
+    notes: $('#evtNotes').value||'',
+    createdAt: Date.now()
+  };
+  const all = LS.get('events',[]); all.push(obj); LS.set('events',all);
+  closeModal(); renderEvents(); updateCounts();
+  openCalendarPrompt(obj);
+}
+function openCalendarPrompt(evt){
+  const start = new Date(`${evt.date}T${evt.time}:00`);
+  const end = new Date(start.getTime()+evt.duration*60000);
+  const pad = n=>String(n).padStart(2,'0');
+  const iso = d=>`${d.getUTCFullYear()}${pad(d.getUTCMonth()+1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
+  const text = encodeURIComponent(evt.title);
+  const details = encodeURIComponent((evt.notes||'') + (evt.telefono?`\nTel: ${evt.telefono}`:'')); 
+  const location = encodeURIComponent(evt.direccion||'');
+  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${iso(start)}/${iso(end)}&details=${details}&location=${location}`;
+  if(confirm('¿Abrir Google Calendar para añadir la cita?')) window.open(url,'_blank');
+}
+function renderEvents(){
+  const q = ($('#agendaFilter').value||'').toLowerCase();
+  const list = LS.get('events',[]).filter(e=>{
+    const s = [e.cliente,e.title,e.date,e.time,e.telefono,e.direccion].join(' ').toLowerCase();
+    return s.includes(q);
+  }).sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
+  $('#agendaCount').innerText = `${list.length} citas`;
+  if(!list.length){ $('#agendaTable').innerHTML = `<div class="empty">No hay citas.</div>`; return; }
+  let html = `<table><thead><tr><th>Fecha</th><th>Hora</th><th>Cliente</th><th>Servicio</th><th>Tel</th><th></th></tr></thead><tbody>`;
+  list.forEach(e=>{
+    html += `<tr>
+      <td>${e.date}</td><td>${e.time}</td><td>${esc(e.cliente)}</td><td>${esc(e.title)}</td><td>${esc(e.telefono)}</td>
+      <td class="right">
+        <button class="btn small" onclick='openCalendarPrompt(${JSON.stringify(e)})'>Añadir a Google</button>
+        <button class="btn small warn" onclick='editEvent("${e.id}")'>Editar</button>
+        <button class="btn small danger" onclick='deleteEvent("${e.id}")'>Eliminar</button>
+      </td></tr>`;
+  });
+  html += `</tbody></table>`;
+  $('#agendaTable').innerHTML = html;
+}
+function editEvent(id){
+  const e = LS.get('events',[]).find(x=>x.id===id); if(!e) return;
+  $('#modalTitle').innerText = 'Editar cita';
+  $('#modalBody').innerHTML = `
+    <div class="row">
+      <input id="evtTitle" value="${esc(e.title)}">
+      <input id="evtCliente" value="${esc(e.cliente)}" placeholder="Cliente">
+    </div>
+    <div class="row mt8">
+      <input type="date" id="evtDate" value="${e.date}">
+      <input type="time" id="evtTime" value="${e.time}">
+      <input id="evtDuration" type="number" min="15" step="15" value="${e.duration}">
+    </div>
+    <textarea id="evtNotes" class="mt8">${esc(e.notes)}</textarea>
+    <div class="mt12 row">
+      <button class="btn brand" onclick="applyEvent('${id}')">Guardar</button>
+    </div>`;
+  $('#modal').classList.remove('hide');
+}
+function applyEvent(id){
+  const all=LS.get('events',[]);
+  const i=all.findIndex(x=>x.id===id);
+  if(i>=0){
+    all[i].title=$('#evtTitle').value; all[i].cliente=$('#evtCliente').value;
+    all[i].date=$('#evtDate').value; all[i].time=$('#evtTime').value;
+    all[i].duration=parseInt($('#evtDuration').value||60,10);
+    all[i].notes=$('#evtNotes').value;
+    LS.set('events',all); closeModal(); renderEvents();
+  }
+}
+function deleteEvent(id){
+  if(!confirm('Eliminar esta cita?')) return;
+  LS.set('events', LS.get('events',[]).filter(x=>x.id!==id));
+  renderEvents(); updateCounts();
+}
+
+/* ========= DOCS (COTIZACIONES/FACTURAS) ========= */
+function openDocForm(kind, id=null){
+  const doc = id ? LS.get(kind+'s',[]).find(x=>x.id===id) : null;
+  const contacts = LS.get('contacts',[]);
+  const items = doc?.items || [{desc:'Servicio', qty:1, price:0}];
+  $('#modalTitle').innerText = (id? 'Editar ' : 'Nueva ') + (kind==='quote'?'cotización':'factura');
+  $('#modalBody').innerHTML = `
+    <div class="row">
+      <select id="docContact">${contacts.map(c=>`<option value="${c.id}" ${(doc&&doc.contactId===c.id)?'selected':''}>${esc(c.nombre||c.name)} (${esc(c.telefono||'')})</option>`).join('')}</select>
+      <input id="docTitle" placeholder="Título" value="${esc(doc?.title|| (kind==='quote'?'Cotización':'Factura'))}">
+      <input id="docNumber" placeholder="${kind==='quote'?'#Cotización':'#Factura'}" value="${esc(doc?.number||'')}">
+    </div>
+    <div class="mt8">
+      <table id="itemsTbl"><thead><tr><th>Descripción</th><th>Cant.</th><th>Precio</th><th></th></tr></thead><tbody>
+        ${items.map((it,idx)=> rowItem(it.desc,it.qty,it.price,idx)).join('')}
+      </tbody></table>
+      <div class="mt8"><button class="btn small" onclick="addItemRow()">+ Ítem</button></div>
+    </div>
+    <div class="row mt8">
+      <input id="docNotes" placeholder="Notas" value="${esc(doc?.notes||'')}">
+      <input id="docTax" type="number" step="0.01" placeholder="IVU %" value="${esc(doc?.tax||'11.5')}">
+      <input id="docDeposit" type="number" step="0.01" placeholder="Depósito %" value="${esc(doc?.deposit||'0')}">
+    </div>
+    <div class="mt12 row">
+      <button class="btn brand" onclick="saveDoc('${kind}','${id||''}')">Guardar</button>
+    </div>`;
+  $('#modal').classList.remove('hide');
+}
+function rowItem(desc='', qty=1, price=0, idx=0){
+  return `<tr>
+    <td><input value="${esc(desc)}" data-k="desc"></td>
+    <td><input type="number" step="0.01" value="${qty}" data-k="qty" style="max-width:120px"></td>
+    <td><input type="number" step="0.01" value="${price}" data-k="price" style="max-width:140px"></td>
+    <td><button class="btn small danger" onclick="this.closest('tr').remove()">–</button></td>
+  </tr>`;
+}
+function addItemRow(){ $('#itemsTbl tbody').insertAdjacentHTML('beforeend', rowItem()); }
+function collectItems(){
+  return Array.from($('#itemsTbl tbody').children).map(tr=>{
+    const get = k => tr.querySelector(`[data-k="${k}"]`).value;
+    return {desc:get('desc'), qty:parseFloat(get('qty')||0), price:parseFloat(get('price')||0)};
+  }).filter(x=>x.desc);
+}
+function saveDoc(kind, id){
+  const all = LS.get(kind+'s',[]);
+  const items = collectItems();
+  const sub = items.reduce((a,b)=>a + b.qty*b.price, 0);
+  const taxPct = parseFloat($('#docTax').value||0);
+  const total = sub * (1 + taxPct/100);
+  const obj = {
+    id: id || uid(kind),
+    kind, createdAt: Date.now(),
+    contactId: $('#docContact').value,
+    title: $('#docTitle').value || (kind==='quote'?'Cotización':'Factura'),
+    number: $('#docNumber').value || '',
+    items, sub, tax: taxPct, total,
+    deposit: parseFloat($('#docDeposit').value||0),
+    notes: $('#docNotes').value||''
+  };
+  const i = all.findIndex(x=>x.id===obj.id);
+  if(i>=0) all[i]=obj; else all.push(obj);
+  LS.set(kind+'s', all);
+  closeModal(); renderDocsTable(kind); updateCounts();
+}
+function renderDocsTable(kind){
+  const list = LS.get(kind+'s',[]);
+  const target = (kind==='quote')? '#quotesTable' : '#invoicesTable';
+  if(!list.length){ $(target).innerHTML = `<div class="empty">No hay ${kind==='quote'?'cotizaciones':'facturas'}.</div>`; return; }
+  let html = `<table><thead><tr><th>Fecha</th><th>#</th><th>Título</th><th>Cliente</th><th>Total</th><th></th></tr></thead><tbody>`;
+  const contacts = LS.get('contacts',[]);
+  list.sort((a,b)=>b.createdAt-a.createdAt).forEach(d=>{
+    const c = contacts.find(x=>x.id===d.contactId) || {};
+    html += `<tr>
+      <td>${new Date(d.createdAt).toLocaleDateString()}</td>
+      <td>${esc(d.number)}</td>
+      <td>${esc(d.title)}</td>
+      <td>${esc(c.nombre||c.name||'')}</td>
+      <td>${fmtMoney(d.total)}</td>
+      <td class="right">
+        <button class="btn small" onclick="openDocForm('${kind}','${d.id}')">Editar</button>
+        <button class="btn small" onclick="openDocPDF('${kind}','${d.id}')">Ver/Exportar PDF</button>
+        <button class="btn small danger" onclick="deleteDoc('${kind}','${d.id}')">Eliminar</button>
+      </td></tr>`;
+  });
+  html += `</tbody></table>`;
+  $(target).innerHTML = html;
+}
+function deleteDoc(kind,id){
+  if(!confirm('Eliminar documento?')) return;
+  LS.set(kind+'s', LS.get(kind+'s',[]).filter(x=>x.id!==id));
+  renderDocsTable(kind); updateCounts();
+}
+function openDocPDF(kind,id){
+  const d = LS.get(kind+'s',[]).find(x=>x.id===id); if(!d) return;
+  const contacts = LS.get('contacts',[]);
+  const c = contacts.find(x=>x.id===d.contactId) || {};
+  const biz = LS.get('biz');
+  const logoTag = biz.logo ? `<img src="${biz.logo}" alt="logo">` : '';
+  const rows = d.items.map(x=>`<tr><td>${esc(x.desc)}</td><td>${x.qty}</td><td>${fmtMoney(x.price)}</td><td>${fmtMoney(x.qty*x.price)}</td></tr>`).join('');
+  const docName = (d.title|| (kind==='quote'?'Cotización':'Factura'));
+  const html = `
+    <div class="brand-head">
+      ${logoTag}
+      <div class="biz">
+        <div><b>${esc(biz.name)}</b></div>
+        <div>${esc(biz.phone)} · ${esc(biz.web)}</div>
+        <div>${esc(biz.addr)}</div>
+      </div>
+    </div>
+    <div class="doc-h1">${docName} ${d.number?('#'+esc(d.number)):""}</div>
+    <div><b>Cliente:</b> ${esc(c.nombre||c.name||'')} — ${esc(c.telefono||'')} — ${esc(c.email||'')}</div>
+    <div class="mt8">
+      <table style="width:100%;border-collapse:collapse" border="1" cellpadding="6">
+        <thead><tr><th align="left">Descripción</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr><td colspan="3" align="right"><b>Subtotal</b></td><td>${fmtMoney(d.sub)}</td></tr>
+          <tr><td colspan="3" align="right"><b>IVU ${d.tax}%</b></td><td>${fmtMoney(d.sub*(d.tax/100))}</td></tr>
+          <tr><td colspan="3" align="right"><b>Total</b></td><td><b>${fmtMoney(d.total)}</b></td></tr>
+          ${d.deposit?`<tr><td colspan="3" align="right">Depósito (${d.deposit}%)</td><td>${fmtMoney(d.total*(d.deposit/100))}</td></tr>`:''}
+        </tfoot>
+      </table>
+    </div>
+    ${d.notes? `<div class="mt12"><b>Notas:</b> ${esc(d.notes)}</div>`:''}
+    <div class="mt16" style="font-size:12px;color:#444">Formas de pago: ATH Móvil, cheque, cash, transferencia bancaria, tarjeta de crédito y débito.</div>
+  `;
+  $('#printView').innerHTML = html;
+  window.print(); // el usuario puede "Guardar como PDF"
+}
+
+/* ========= RENDIMIENTO ========= */
+function updateCounts(){
+  $('#codesCount').innerText = `${LS.get('codes',[]).length} códigos cargados`;
+}
+function recomputeAnalytics(){
+  const Q = LS.get('quotes',[]), I = LS.get('invoices',[]), E = LS.get('events',[]);
+  const sumQ = Q.reduce((a,b)=>a+b.total,0), sumI = I.reduce((a,b)=>a+b.total,0);
+  $('#analyticsSummary').innerHTML = `
+    <div class="row">
+      <div class="pill">Cotizaciones: <b>${Q.length}</b> | ${fmtMoney(sumQ)}</div>
+      <div class="pill">Facturas: <b>${I.length}</b> | ${fmtMoney(sumI)}</div>
+      <div class="pill">Citas: <b>${E.length}</b></div>
+      <div class="pill">Tickets promedio factura: <b>${fmtMoney(I.length?sumI/I.length:0)}</b></div>
+    </div>`;
+  drawTrendChart('chart1');
+}
+function drawTrendChart(id){
+  const ctx = document.getElementById(id).getContext('2d');
+  const Q = LS.get('quotes',[]), I = LS.get('invoices',[]), E = LS.get('events',[]);
+  // construir últimos 12 meses
+  const now = new Date(); const months=[];
+  for(let i=11;i>=0;i--){const d=new Date(now.getFullYear(), now.getMonth()-i, 1); months.push({k:d.toISOString().slice(0,7), q:0, i:0, e:0});}
+  const bump=(arr,prop,ts)=>{ const k=new Date(ts).toISOString().slice(0,7); const m=months.find(x=>x.k===k); if(m) m[prop]++; };
+  Q.forEach(x=>bump(months,'q',x.createdAt));
+  I.forEach(x=>bump(months,'i',x.createdAt));
+  E.forEach(x=>bump(months,'e',new Date(`${x.date}T${x.time}:00`).getTime()));
+  // dibujo simple
+  ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+  const W=ctx.canvas.width, H=ctx.canvas.height, P=30;
+  ctx.strokeStyle='#335c7a'; ctx.strokeRect(P,P,W-2*P,H-2*P);
+  const ys=[...months.map(m=>m.q),...months.map(m=>m.i),...months.map(m=>m.e)];
+  const max=Math.max(1, ...ys);
+  const stepX=(W-2*P)/(months.length-1);
+  function line(prop){
+    ctx.beginPath();
+    months.forEach((m,idx)=>{
+      const x=P+idx*stepX;
+      const y=H-P - (m[prop]/max)*(H-2*P);
+      if(idx===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  }
+  // ejes y leyenda
+  ctx.fillStyle='#88a9bf'; ctx.font='12px system-ui';
+  months.forEach((m,idx)=>{ const x=P+idx*stepX; if(idx%2===0) ctx.fillText(m.k.slice(2), x-12, H-8); });
+  // dibujar tres líneas con diferentes grosores
+  ctx.lineWidth=2; line('q');
+  ctx.lineWidth=2.5; line('i');
+  ctx.lineWidth=1.5; line('e');
+  ctx.fillText('Q=cot, I=fact, E=citas', W-170, P-8);
+}
+
+/* ========= CONFIGURACIÓN ========= */
+function handleLogo(ev){
+  const f = ev.target.files?.[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = e=>{
+    const biz = LS.get('biz'); biz.logo = e.target.result; LS.set('biz',biz);
+    $('#logoPreview').src = biz.logo; $('#oasisLogoHeader').src = biz.logo;
+  };
+  r.readAsDataURL(f);
+}
+function clearLogo(){ const biz=LS.get('biz'); biz.logo=null; LS.set('biz',biz); $('#logoPreview').src=''; }
+function saveBusiness(){
+  const biz = {name:$('#bizName').value||'', phone:$('#bizPhone').value||'', web:$('#bizWeb').value||'', addr:$('#bizAddr').value||'', logo:LS.get('biz').logo||null};
+  LS.set('biz', biz); alert('Datos guardados.');
+}
+function loadBizToForm(){
+  const b = LS.get('biz'); $('#bizName').value=b.name; $('#bizPhone').value=b.phone; $('#bizWeb').value=b.web; $('#bizAddr').value=b.addr; if(b.logo) $('#logoPreview').src=b.logo;
+}
+
+/* Contactos */
+function renderContacts(){
+  const list = LS.get('contacts',[]);
+  if(!list.length){ $('#contactsTable').innerHTML = `<div class="empty">No hay contactos.</div>`; return; }
+  let html = `<table><thead><tr><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Dirección</th><th></th></tr></thead><tbody>`;
+  list.forEach(c=>{
+    html += `<tr>
+      <td>${esc(c.nombre||c.name||'')}</td><td>${esc(c.telefono||'')}</td><td>${esc(c.email||'')}</td><td>${esc(c.direccion||'')}</td>
+      <td class="right"><button class="btn small warn" onclick='editContact("${c.id}")'>Editar</button> <button class="btn small danger" onclick='deleteContact("${c.id}")'>Eliminar</button></td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+  $('#contactsTable').innerHTML = html;
+}
+function addContact(){
+  const c={id:uid('c'), nombre:$('#cName').value, telefono:$('#cPhone').value, email:$('#cEmail').value, direccion:$('#cAddr').value};
+  const list=LS.get('contacts',[]); list.push(c); LS.set('contacts',list);
+  $('#cName').value=$('#cPhone').value=$('#cEmail').value=$('#cAddr').value='';
+  renderContacts();
+}
+function editContact(id){
+  const c=LS.get('contacts',[]).find(x=>x.id===id); if(!c) return;
+  $('#modalTitle').innerText='Editar contacto';
+  $('#modalBody').innerHTML=`
+    <input id="ecName" value="${esc(c.nombre||'')}">
+    <input id="ecPhone" value="${esc(c.telefono||'')}">
+    <input id="ecEmail" value="${esc(c.email||'')}">
+    <input id="ecAddr" value="${esc(c.direccion||'')}">
+    <div class="mt12"><button class="btn brand" onclick="applyContact('${id}')">Guardar</button></div>`;
+  $('#modal').classList.remove('hide');
+}
+function applyContact(id){
+  const list=LS.get('contacts',[]);
+  const i=list.findIndex(x=>x.id===id);
+  list[i].nombre=$('#ecName').value; list[i].telefono=$('#ecPhone').value; list[i].email=$('#ecEmail').value; list[i].direccion=$('#ecAddr').value;
+  LS.set('contacts',list); closeModal(); renderContacts();
+}
+function deleteContact(id){
+  if(!confirm('Eliminar contacto?')) return;
+  LS.set('contacts', LS.get('contacts',[]).filter(x=>x.id!==id)); renderContacts();
+}
+function importContacts(ev){
+  const f=ev.target.files?.[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      let arr=[];
+      if(f.name.endsWith('.json')) arr=JSON.parse(e.target.result);
+      else arr = parseCSV(e.target.result).map(o=>({nombre:o.nombre||o.name||'', telefono:o.telefono||o.phone||'', email:o.email||'', direccion:o.direccion||o.address||''}));
+      const list=LS.get('contacts',[]);
+      arr.forEach(x=> list.push({id:uid('c'), ...x}));
+      LS.set('contacts',list); renderContacts(); alert('Contactos importados.');
+    }catch(err){ alert('Error importando: '+err.message); }
+  };
+  r.readAsText(f);
+}
+
+/* Códigos */
+function renderCodesCount(){ updateCounts(); }
+function addCode(){
+  const rec={marca:$('#mBrand').value,codigo:$('#mCode').value,descripcion:$('#mDesc').value,solucion:$('#mFix').value,tipo_falla:$('#mType').value,nivel:$('#mLevel').value,nota:$('#mNote').value};
+  const list=LS.get('codes',[]); list.push(rec); LS.set('codes',list); updateCounts(); alert('Código añadido.');
+  $('#mBrand').value=$('#mCode').value=$('#mDesc').value=$('#mFix').value=$('#mType').value=$('#mLevel').value=$('#mNote').value='';
+}
+function importCodes(ev){
+  const f=ev.target.files?.[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      let arr=[];
+      if(f.name.endsWith('.json')) arr=JSON.parse(e.target.result);
+      else arr = parseCSV(e.target.result);
+      const list=LS.get('codes',[]); arr.forEach(x=>list.push(x));
+      LS.set('codes',list); updateCounts(); alert('Códigos importados.');
+    }catch(err){ alert('Error importando: '+err.message); }
+  };
+  r.readAsText(f);
+}
+
+/* ========= MODAL ========= */
+function closeModal(){ $('#modal').classList.add('hide'); $('#modalBody').innerHTML=''; }
+
+/* ========= CSV SIMPLE ========= */
+function parseCSV(text){
+  const lines = text.split(/\r?\n/).filter(Boolean);
+  if(!lines.length) return [];
+  const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
+  return lines.slice(1).map(line=>{
+    const cols = splitCSVLine(line);
+    const obj={}; headers.forEach((h,i)=> obj[h]= (cols[i]||'').trim()); return obj;
+  });
+}
+function splitCSVLine(line){ // soporta comillas
+  const out=[]; let cur='', inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"' ){ if(inQ && line[i+1]==='"'){cur+='"'; i++;} else inQ=!inQ; }
+    else if(ch===',' && !inQ){ out.push(cur); cur=''; }
+    else cur+=ch;
+  }
+  out.push(cur); return out;
+}
+
+/* ========= FIN ========= */
+</script>
+</body>
+</html>
