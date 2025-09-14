@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>OASIS PRO IA — Panel</title>
+<style>
+  :root{
+    --bg:#0b1624;           /* fondo principal */
+    --panel:#122033;        /* tarjetas */
+    --panel-2:#0f1b2b;      /* sidebar */
+    --muted:#7f8aa3;
+    --text:#e9eef8;
+    --white:#ffffff;
+    --primary:#3aa0ff;
+    --primary-2:#00c2ff;
+    --accent:#2b6fff;
+    --good:#36d399;
+    --warn:#fbbf24;
+    --bad:#f87171;
+    --card-radius:14px;
+    --shadow:0 10px 24px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    background: radial-gradient(1200px 700px at -200px -100px, rgba(10,70,120,.25), transparent 70%), var(--bg);
+    color:var(--text);
+  }
+  a{color:var(--primary)}
+  .app{display:grid; grid-template-columns:280px 1fr; min-height:100vh;}
+  /* Sidebar */
+  .sidebar{
+    background: linear-gradient(180deg, var(--panel-2), #0c1a2a 60%, #0a1626);
+    padding:28px 22px;
+    border-right:1px solid rgba(255,255,255,.06);
+  }
+  .brand{
+    display:flex; align-items:center; gap:12px; margin-bottom:26px;
+  }
+  .logo{
+    width:44px; height:44px; border-radius:12px;
+    background: conic-gradient(from 60deg, #00c2ff, #1986ff, #00c2ff);
+    position:relative; display:grid; place-items:center;
+    box-shadow:0 8px 18px rgba(0,140,255,.35) inset, 0 0 0 1px rgba(255,255,255,.06);
+  }
+  /* simple SVG engranaje/flake */
+  .logo svg{width:28px; height:28px; filter:drop-shadow(0 2px 2px rgba(0,0,0,.25));}
+  .brand h1{line-height:1; margin:0; font-size:18px; letter-spacing:.3px}
+  .brand small{display:block; color:#c6d5ee; opacity:.85; margin-top:3px; font-weight:500}
+  .nav a{
+    display:flex; align-items:center; gap:10px;
+    padding:12px 12px; border-radius:10px; color:#c5d2ea; text-decoration:none; margin:6px 0;
+    transition:transform .05s ease, background .2s ease, color .2s ease;
+  }
+  .nav a:hover{background:rgba(255,255,255,.06); color:#fff; transform:translateX(2px)}
+  .nav a.active{background:linear-gradient(90deg, rgba(0,194,255,.18), rgba(25,134,255,.15)); color:#fff; box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+  .nav i{width:20px; opacity:.9}
+  /* Main */
+  .main{padding:28px; display:grid; gap:22px;}
+  .grid{display:grid; grid-template-columns:1.2fr .9fr; gap:22px;}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.00)), var(--panel);
+    border-radius:var(--card-radius);
+    padding:18px;
+    box-shadow:var(--shadow);
+    border:1px solid rgba(255,255,255,.06);
+  }
+  .card h3{margin:0 0 12px 0; font-size:18px; letter-spacing:.2px}
+  .muted{color:var(--muted)}
+  .input, select, textarea{
+    width:100%; padding:12px 14px; border-radius:12px; background:#0e1c2e; border:1px solid rgba(255,255,255,.08); color:var(--text);
+    outline:none;
+  }
+  .input::placeholder{color:#98a7c7}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-2));
+    border:none; color:#00122a; font-weight:700;
+    padding:12px 16px; border-radius:12px; cursor:pointer; letter-spacing:.3px;
+    box-shadow:0 8px 20px rgba(0,162,255,.35);
+  }
+  .btn.secondary{background:#0e1c2e; color:#d8e6ff; border:1px solid rgba(255,255,255,.08); box-shadow:none}
+  .btn:active{transform:translateY(1px)}
+  .calendar{display:grid; gap:10px}
+  .cal-header{display:flex; align-items:center; justify-content:space-between}
+  .cal-grid{
+    display:grid; grid-template-columns:repeat(7, 1fr); gap:6px;
+  }
+  .cal-cell{
+    border-radius:10px; padding:8px; min-height:58px; background:#0e1b2b; border:1px solid rgba(255,255,255,.06);
+    display:flex; flex-direction:column;
+  }
+  .cal-cell .day{font-size:12px; color:#9fb3d8}
+  .cal-cell .dot{margin-top:auto; height:6px; width:6px; border-radius:50%; background:var(--primary)}
+  .cal-cell.today{outline:2px solid var(--accent)}
+  .list{display:grid; gap:10px; max-height:220px; overflow:auto}
+  .item{
+    background:#0f1c2d; border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center;
+  }
+  .kpis{display:flex; gap:14px; flex-wrap:wrap}
+  .kpi{flex:1 1 120px; background:#0e1b2b; border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:12px}
+  .kpi b{display:block; font-size:22px}
+  canvas{width:100%; height:140px; display:block}
+  .footer-note{font-size:12px; color:#97a6c9; margin-top:6px}
+  .flex{display:flex; gap:10px; align-items:center}
+  .right{margin-left:auto}
+  .hidden{display:none !important}
+  /* Responsive */
+  @media (max-width: 1100px){
+    .app{grid-template-columns:1fr}
+    .sidebar{position:sticky; top:0; z-index:10}
+    .grid{grid-template-columns:1fr}
+    .row{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo" aria-label="Oasis Pro IA">
+        <!-- Engranaje + copo de nieve -->
+        <svg viewBox="0 0 24 24" fill="#e9f7ff" aria-hidden="true">
+          <path d="M12 2l1.2 2.9a7.7 7.7 0 013 .9l2.7-1.4 1.6 2.8-2.3 1.9a7.8 7.8 0 01.1 1.1 7.8 7.8 0 01-.1 1.1l2.3 1.9-1.6 2.8-2.7-1.4a7.7 7.7 0 01-3 .9L12 22l-1.2-2.9a7.7 7.7 0 01-3-.9l-2.7 1.4-1.6-2.8 2.3-1.9a7.8 7.8 0 01-.1-1.1 7.8 7.8 0 01.1-1.1L2.5 7.2l1.6-2.8 2.7 1.4a7.7 7.7 0 013-.9L12 2zm0 6.2a3.8 3.8 0 100 7.6 3.8 3.8 0 000-7.6z"/>
+          <path fill="#0aa8ff" d="M12 7.6l.9 1.2 1.4-.5-.5 1.4 1.2.9-1.2.9.5 1.4-1.4-.5L12 14l-.9-1.2-1.4.5.5-1.4L9 10.6l1.2-.9-.5-1.4 1.4.5L12 7.6z"/>
+        </svg>
+      </div>
+      <div>
+        <h1>OASIS<br><small>PRO IA</small></h1>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="#" class="active" data-section="panel"><i>🏠</i> Panel</a>
+      <a href="#" data-section="diagnostico"><i>🧰</i> Diagnóstico Técnico</a>
+      <a href="#" data-section="agenda"><i>🗓️</i> Agenda Inteligente</a>
+      <a href="#" data-section="cotizaciones"><i>💼</i> Cotizaciones Automáticas</a>
+      <a href="#" data-section="rendimiento"><i>📈</i> Análisis de Rendimiento</a>
+    </nav>
+    <div style="margin-top:28px; font-size:12px; color:#9fb3d8">
+      © Oasis Air Cleaner Services LLC<br>
+      <span class="muted">787‑664‑3079 · oasisservicespr.com</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- PANEL -->
+    <section id="panel" class="section">
+      <div class="grid">
+        <div class="card">
+          <h3>Diagnóstico Técnico</h3>
+          <p class="muted">Ingresa un síntoma (p. ej. “no enfría”) o un código (p. ej. <b>E1</b>, <b>F0</b>).</p>
+          <div class="flex" style="margin-top:8px">
+            <input id="diag-input" class="input" placeholder="Síntoma o código de error"/>
+            <button class="btn" id="btn-diagnosticar">Diagnosticar</button>
+          </div>
+          <div id="diag-result" style="margin-top:14px"></div>
+          <div class="footer-note">Base de datos local demo — puedes editar/añadir códigos en Configuración → Datos (JSON) dentro del archivo.</div>
+        </div>
+
+        <div class="card calendar">
+          <div class="cal-header">
+            <h3 style="margin:0">Agenda Inteligente</h3>
+            <div class="flex">
+              <button class="btn secondary" id="prev-month">◀</button>
+              <div id="cal-title" style="min-width:140px; text-align:center"></div>
+              <button class="btn secondary" id="next-month">▶</button>
+            </div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <div class="flex">
+            <button class="btn" id="btn-nueva-cita">Nueva cita</button>
+            <button class="btn secondary right" id="btn-limpiar-citas">Borrar todo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <h3>Cotizaciones Automáticas</h3>
+          <div class="kpis">
+            <div class="kpi"><span class="muted">Total Mes</span><b id="kpi-total-mes">$0</b></div>
+            <div class="kpi"><span class="muted">Aprobadas</span><b id="kpi-aprobadas">0</b></div>
+            <div class="kpi"><span class="muted">Tasa Éxito</span><b id="kpi-rate">0%</b></div>
+          </div>
+          <canvas id="chart-quotes" width="600" height="140"></canvas>
+          <div class="list" id="lista-quotes"></div>
+          <div class="flex" style="margin-top:10px">
+            <button class="btn" id="btn-nueva-quote">Nueva cotización</button>
+            <button class="btn secondary right" id="btn-limpiar-quotes">Borrar historial</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Análisis de Rendimiento</h3>
+          <div class="kpis">
+            <div class="kpi"><span class="muted">Mantenimientos</span><b id="kpi-mants">0</b></div>
+            <div class="kpi"><span class="muted">Ingresos</span><b id="kpi-ingresos">$0</b></div>
+            <div class="kpi"><span class="muted">Eficiencia</span><b id="kpi-ef">0%</b></div>
+          </div>
+          <canvas id="chart-perf" width="600" height="140"></canvas>
+          <p class="footer-note">Gráficas generadas con Canvas sin librerías externas.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAGNÓSTICO -->
+    <section id="diagnostico" class="section hidden">
+      <div class="card">
+        <h3>Diagnóstico Técnico Inteligente</h3>
+        <div class="row">
+          <div>
+            <label class="muted">Marca</label>
+            <select id="diag-marca" class="input" style="margin:6px 0 10px 0">
+              <option value="">Cualquiera</option>
+              <option>Midea</option><option>Gree</option><option>Fujitsu</option><option>AirMax</option><option>TGM</option>
+            </select>
+          </div>
+          <div>
+            <label class="muted">Código o síntoma</label>
+            <input id="diag-input-2" class="input" placeholder="Ej: E1 / no enciende / fuga"/>
+          </div>
+        </div>
+        <div class="flex">
+          <button class="btn" id="btn-diagnosticar-2">Diagnosticar</button>
+          <button class="btn secondary" id="btn-limpiar-diag" style="margin-left:auto">Limpiar</button>
+        </div>
+        <div id="diag-result-2" style="margin-top:14px"></div>
+      </div>
+    </section>
+
+    <!-- AGENDA -->
+    <section id="agenda" class="section hidden">
+      <div class="grid">
+        <div class="card">
+          <h3>Calendario</h3>
+          <div class="calendar">
+            <div class="cal-header">
+              <div class="flex">
+                <button class="btn secondary" id="prev-month-2">◀</button>
+                <div id="cal-title-2" style="min-width:160px; text-align:center"></div>
+                <button class="btn secondary" id="next-month-2">▶</button>
+              </div>
+              <button class="btn" id="btn-nueva-cita-2">Nueva cita</button>
+            </div>
+            <div class="cal-grid" id="cal-grid-2"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Citas del Día</h3>
+          <div id="citas-dia" class="list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COTIZACIONES -->
+    <section id="cotizaciones" class="section hidden">
+      <div class="grid">
+        <div class="card">
+          <h3>Crear Cotización</h3>
+          <div class="row">
+            <div>
+              <label class="muted">Cliente</label>
+              <input id="q-cliente" class="input" placeholder="Nombre del cliente"/>
+            </div>
+            <div>
+              <label class="muted">Subtotal (USD)</label>
+              <input id="q-subtotal" class="input" type="number" inputmode="decimal" placeholder="0.00"/>
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label class="muted">Descripción</label>
+              <input id="q-desc" class="input" placeholder="Ej: Instalación mini split 12k BTU"/>
+            </div>
+            <div>
+              <label class="muted">Aplicar IVU (11.5%)</label>
+              <select id="q-ivu" class="input"><option value="si">Sí</option><option value="no">No</option></select>
+            </div>
+          </div>
+          <div class="flex" style="margin-top:8px">
+            <button class="btn" id="btn-guardar-quote">Guardar</button>
+            <button class="btn secondary right" id="btn-exportar-quote">Exportar JSON</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Historial</h3>
+          <div id="historial-quotes" class="list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RENDIMIENTO -->
+    <section id="rendimiento" class="section hidden">
+      <div class="row">
+        <div class="card">
+          <h3>Métricas</h3>
+          <div class="kpis">
+            <div class="kpi"><span class="muted">Tickets Cerrados</span><b id="r-tickets">0</b></div>
+            <div class="kpi"><span class="muted">Tiempo Prom.</span><b id="r-tiempo">0.0 h</b></div>
+            <div class="kpi"><span class="muted">NPS</span><b id="r-nps">0</b></div>
+          </div>
+          <canvas id="chart-rend" width="700" height="160"></canvas>
+        </div>
+        <div class="card">
+          <h3>Notas</h3>
+          <textarea id="r-notas" rows="8" class="input" placeholder="Observaciones de rendimiento, pendientes, ideas… (se guarda localmente)"></textarea>
+          <div class="footer-note">Guardado automático en tu navegador.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Modal simple -->
+<div id="modal" class="hidden" style="position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55)">
+  <div style="background:var(--panel); border:1px solid rgba(255,255,255,.08); border-radius:16px; width:min(560px,92vw); padding:18px; box-shadow:var(--shadow)">
+    <div class="flex">
+      <h3 id="modal-title" style="margin:0">Nueva cita</h3>
+      <button class="btn secondary right" id="modal-close">Cerrar</button>
+    </div>
+    <div id="modal-body" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<script>
+/* ===================== UTIL ===================== */
+const $ = s=>document.querySelector(s);
+const $$ = s=>document.querySelectorAll(s);
+const money = n => new Intl.NumberFormat('es-PR', {style:'currency', currency:'USD'}).format(n||0);
+const today = new Date();
+const LS = {
+  get:k=>JSON.parse(localStorage.getItem(k)||'null'),
+  set:(k,v)=>localStorage.setItem(k, JSON.stringify(v))
+};
+
+/* ===================== NAVEGACIÓN ===================== */
+$$(".nav a").forEach(a=>{
+  a.addEventListener("click", (e)=>{
+    e.preventDefault();
+    $$(".nav a").forEach(n=>n.classList.remove("active"));
+    a.classList.add("active");
+    const sec = a.dataset.section;
+    $$(".section").forEach(s=>s.classList.add("hidden"));
+    $("#"+sec).classList.remove("hidden");
+  });
+});
+
+/* ===================== BASE DE DATOS DIAGNÓSTICO (demo) ===================== */
+const DB = [
+  {marca:"TGM", codigo:"E1", nombre:"Error de comunicación", sintomas:["no enciende unidad exterior", "parpadeo tablero"], pasos:[
+    "Verifica cable de comunicación entre U.I. y U.E.",
+    "Revisa voltaje entre terminales S1/S2/S3 (debe estar adecuado según manual).",
+    "Inspecciona tarjeta exterior y conectores; resetea energía 5 min.",
+    "Si persiste, probable fallo en placa exterior (comunicación)."
+  ]},
+  {marca:"Midea", codigo:"F0", nombre:"Fuga/Refrigerante bajo", sintomas:["no enfría", "hielo en tubería"], pasos:[
+    "Prueba de fuga con nitrógeno/espuma a 400 psi (según protocolo).",
+    "Repara fuga, realiza vacío a 500 micrones o menos.",
+    "Carga por peso especificado; verifica subenfriamiento/sobrecalentamiento."
+  ]},
+  {marca:"Gree", codigo:"H1", nombre:"Desescarche", sintomas:["ventilador interior pausa", "vapor en U.E."], pasos:[
+    "Proceso normal en modo calor. No requiere intervención salvo exceso.",
+    "Verifica sensores NTC y limpieza de serpentín exterior."
+  ]},
+  {marca:"Fujitsu", codigo:"E:EE", nombre:"Sensor NTC", sintomas:["apaga a los minutos"], pasos:[
+    "Mide resistencia del NTC según temperatura.",
+    "Reemplaza sensor si está fuera de rango."
+  ]},
+  {marca:"AirMax", codigo:"E5", nombre:"Protección del compresor", sintomas:["se apaga a alta carga"], pasos:[
+    "Revisa flujo de aire, limpieza de filtros y evaporador.",
+    "Verifica amperaje del compresor y capacitor si aplica."
+  ]}
+];
+
+function diagnosticar(texto, marca=""){
+  const t = (texto||"").trim().toLowerCase();
+  if(!t) return [];
+  return DB.filter(r=>
+     (!marca || r.marca.toLowerCase()===marca.toLowerCase()) &&
+     (r.codigo.toLowerCase()===t ||
+      r.nombre.toLowerCase().includes(t) ||
+      r.sintomas.some(s=>s.toLowerCase().includes(t))
+     )
+  );
+}
+
+function renderDiagnostico(lista, target){
+  if(!lista.length){ target.innerHTML = '<div class="item"><span>Sin resultados</span></div>'; return; }
+  target.innerHTML = lista.map(r=>`
+    <div class="item" style="align-items:flex-start; gap:12px">
+      <div>
+        <div><b>${r.marca}</b> — <span class="muted">Código</span> <b>${r.codigo}</b></div>
+        <div class="muted" style="margin:6px 0">${r.nombre}</div>
+        <ol style="margin:0 0 6px 18px">${r.pasos.map(p=>`<li>${p}</li>`).join("")}</ol>
+        <div class="muted">Síntomas: ${r.sintomas.join(" · ")}</div>
+      </div>
+      <button class="btn secondary right" onclick='copiar(${JSON.stringify(JSON.stringify(r))})'>Copiar</button>
+    </div>
+  `).join("");
+}
+function copiar(txt){ navigator.clipboard.writeText(JSON.parse(txt)); }
+
+$("#btn-diagnosticar").onclick = ()=>{
+  renderDiagnostico(diagnosticar($("#diag-input").value), $("#diag-result"));
+};
+$("#btn-diagnosticar-2").onclick = ()=>{
+  renderDiagnostico(diagnosticar($("#diag-input-2").value, $("#diag-marca").value), $("#diag-result-2"));
+};
+$("#btn-limpiar-diag").onclick=()=>{ $("#diag-input-2").value=""; $("#diag-result-2").innerHTML=""; };
+
+/* ===================== CALENDARIO / AGENDA ===================== */
+let calDate = new Date();
+let calDate2 = new Date();
+const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+let citas = LS.get("oasisAppointments") || [];
+
+function pintarMes(date, gridEl, titleEl, dayClick){
+  gridEl.innerHTML="";
+  const y = date.getFullYear();
+  const m = date.getMonth();
+  titleEl.textContent = `${MESES[m]} ${y}`;
+  const first = new Date(y,m,1);
+  const start = first.getDay(); // 0=Dom
+  const days = new Date(y,m+1,0).getDate();
+  const dnames = ["D","L","M","M","J","V","S"];
+  dnames.forEach(n=>{
+    const h = document.createElement("div"); h.textContent=n; h.className="muted"; h.style.textAlign="center"; gridEl.appendChild(h);
+  });
+  for(let i=0;i<start;i++){
+    const cell = document.createElement("div"); cell.className="cal-cell"; gridEl.appendChild(cell);
+  }
+  for(let d=1; d<=days; d++){
+    const cell = document.createElement("div"); cell.className="cal-cell";
+    const isToday = y===today.getFullYear() && m===today.getMonth() && d===today.getDate();
+    if(isToday) cell.classList.add("today");
+    const head = document.createElement("div"); head.className="day"; head.textContent=d; cell.appendChild(head);
+    const fechaISO = new Date(y,m,d).toISOString().slice(0,10);
+    const has = citas.some(c=>c.fecha===fechaISO);
+    if(has){ const dot=document.createElement("div"); dot.className="dot"; cell.appendChild(dot); }
+    cell.addEventListener("click", ()=> dayClick(new Date(y,m,d)));
+    gridEl.appendChild(cell);
+  }
+}
+
+function openModal(title, html, onMount){
+  $("#modal-title").textContent=title;
+  $("#modal-body").innerHTML = html;
+  $("#modal").classList.remove("hidden");
+  if(onMount) onMount();
+}
+$("#modal-close").onclick = ()=> $("#modal").classList.add("hidden");
+
+function formNuevaCita(defDate){
+  openModal("Nueva cita", `
+    <div class="row">
+      <div><label class="muted">Fecha</label><input id="c-fecha" type="date" class="input" value="${defDate||new Date().toISOString().slice(0,10)}"></div>
+      <div><label class="muted">Hora</label><input id="c-hora" type="time" class="input" value="09:00"></div>
+    </div>
+    <div class="row">
+      <div><label class="muted">Cliente</label><input id="c-cliente" class="input" placeholder="Nombre y apellidos"></div>
+      <div><label class="muted">Servicio</label><input id="c-serv" class="input" placeholder="Ej: Mantenimiento, Instalación"></div>
+    </div>
+    <label class="muted">Notas</label><input id="c-notas" class="input" placeholder="Detalles del trabajo, dirección, etc.">
+    <div class="flex" style="margin-top:10px">
+      <button class="btn" id="c-save">Guardar</button>
+      <button class="btn secondary right" id="c-whatsapp">WhatsApp</button>
+    </div>
+  `, ()=>{
+    $("#c-save").onclick = ()=>{
+      const cita = {
+        fecha: $("#c-fecha").value,
+        hora: $("#c-hora").value,
+        cliente: $("#c-cliente").value,
+        servicio: $("#c-serv").value,
+        notas: $("#c-notas").value
+      };
+      citas.push(cita); LS.set("oasisAppointments", citas);
+      renderTodo();
+      $("#modal").classList.add("hidden");
+    };
+    $("#c-whatsapp").onclick = ()=>{
+      const msg = encodeURIComponent(`Confirmación de cita Oasis:\n${$("#c-fecha").value} ${$("#c-hora").value}\nCliente: ${$("#c-cliente").value}\nServicio: ${$("#c-serv").value}`);
+      window.open(`https://wa.me/17876643079?text=${msg}`, "_blank");
+    };
+  });
+}
+
+function citasDelDia(fechaISO){
+  return citas.filter(c=>c.fecha===fechaISO).sort((a,b)=>a.hora.localeCompare(b.hora));
+}
+
+function pintarCitasDia(date){
+  const cont = $("#citas-dia");
+  const iso = date.toISOString().slice(0,10);
+  const list = citasDelDia(iso);
+  cont.innerHTML = list.length? list.map(c=>`
+    <div class="item">
+      <div><b>${c.hora}</b> · ${c.cliente} <span class="muted">— ${c.servicio}</span></div>
+      <div class="flex">
+        <button class="btn secondary" onclick='borrarCita("${iso}","${c.hora}","${c.cliente}")'>Borrar</button>
+      </div>
+    </div>
+  `).join("") : '<div class="item"><span class="muted">Sin citas</span></div>';
+}
+function borrarCita(fecha,hora,cliente){
+  citas = citas.filter(c=>!(c.fecha===fecha && c.hora===hora && c.cliente===cliente));
+  LS.set("oasisAppointments", citas); renderTodo();
+}
+$("#btn-nueva-cita").onclick = ()=> formNuevaCita(new Date().toISOString().slice(0,10));
+$("#btn-nueva-cita-2").onclick = ()=> formNuevaCita(new Date().toISOString().slice(0,10));
+$("#btn-limpiar-citas").onclick = ()=> { if(confirm("¿Borrar todas las citas?")){ citas=[]; LS.set("oasisAppointments", citas); renderTodo(); } };
+$("#prev-month").onclick = ()=>{ calDate.setMonth(calDate.getMonth()-1); renderCalendarios(); };
+$("#next-month").onclick = ()=>{ calDate.setMonth(calDate.getMonth()+1); renderCalendarios(); };
+$("#prev-month-2").onclick = ()=>{ calDate2.setMonth(calDate2.getMonth()-1); renderCalendarios(); };
+$("#next-month-2").onclick = ()=>{ calDate2.setMonth(calDate2.getMonth()+1); renderCalendarios(); };
+
+/* ===================== COTIZACIONES ===================== */
+let quotes = LS.get("oasisQuotes") || [];
+function calcularTotal(subtotal, aplicaIvu){
+  const st = Number(subtotal||0);
+  const ivu = aplicaIvu ? st*0.115 : 0;
+  return {st, ivu, total: st + ivu};
+}
+function addQuote(cliente, desc, subtotal, aplicaIvu){
+  const {st, ivu, total} = calcularTotal(subtotal, aplicaIvu);
+  const q = {id:Date.now(), fecha:new Date().toISOString(), cliente, desc, subtotal:st, ivu, total, aprobada: Math.random()>0.35};
+  quotes.push(q); LS.set("oasisQuotes", quotes); renderQuotes();
+}
+$("#btn-guardar-quote").onclick = ()=>{
+  const cliente = $("#q-cliente").value.trim();
+  const desc = $("#q-desc").value.trim();
+  const subtotal = parseFloat($("#q-subtotal").value||"0");
+  const aplica = $("#q-ivu").value==="si";
+  if(!cliente || !desc) return alert("Completa cliente y descripción.");
+  addQuote(cliente, desc, subtotal, aplica);
+  $("#q-cliente").value = $("#q-desc").value = ""; $("#q-subtotal").value="";
+};
+$("#btn-exportar-quote").onclick = ()=>{
+  const blob = new Blob([JSON.stringify(quotes, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "oasis_cotizaciones.json";
+  a.click();
+};
+$("#btn-nueva-quote").onclick = ()=>{
+  openModal("Nueva cotización", `
+    <div class="row">
+      <div><label class="muted">Cliente</label><input id="m-cliente" class="input"></div>
+      <div><label class="muted">Subtotal</label><input id="m-subtotal" class="input" type="number" inputmode="decimal"></div>
+    </div>
+    <label class="muted">Descripción</label><input id="m-desc" class="input" placeholder="Trabajo a realizar">
+    <div class="flex" style="margin-top:10px">
+      <button class="btn" id="m-save">Guardar</button>
+      <button class="btn secondary right" id="m-iva">IVU 11.5%: <span id="m-iva-val">Sí</span></button>
+    </div>
+  `, ()=>{
+    let useIvu = true;
+    $("#m-iva").onclick=()=>{ useIvu=!useIvu; $("#m-iva-val").textContent = useIvu? "Sí":"No"; };
+    $("#m-save").onclick=()=>{
+      addQuote($("#m-cliente").value, $("#m-desc").value, parseFloat($("#m-subtotal").value||"0"), useIvu);
+      $("#modal").classList.add("hidden");
+    };
+  });
+};
+$("#btn-limpiar-quotes").onclick = ()=>{ if(confirm("¿Borrar historial de cotizaciones?")){ quotes=[]; LS.set("oasisQuotes", quotes); renderQuotes(); } };
+
+function renderQuotes(){
+  // KPIs
+  const now = new Date(); const mes = now.getMonth(); const ano = now.getFullYear();
+  const delMes = quotes.filter(q=> new Date(q.fecha).getMonth()===mes && new Date(q.fecha).getFullYear()===ano);
+  const totalMes = delMes.reduce((a,q)=>a+q.total,0);
+  const aprobadas = delMes.filter(q=>q.aprobada).length;
+  const rate = delMes.length? Math.round(100*aprobadas/delMes.length) : 0;
+  $("#kpi-total-mes").textContent = money(totalMes);
+  $("#kpi-aprobadas").textContent = aprobadas;
+  $("#kpi-rate").textContent = rate+"%";
+  // Lista principal
+  $("#lista-quotes").innerHTML = delMes.slice().reverse().map(q=>`
+    <div class="item">
+      <div><b>${q.cliente}</b> — ${q.desc}<br><span class="muted">${new Date(q.fecha).toLocaleDateString()} · Subtotal ${money(q.subtotal)} · IVU ${money(q.ivu)}</span></div>
+      <div><b>${money(q.total)}</b><div class="muted" style="text-align:right">${q.aprobada? "Aprobada ✅":"Pendiente"}</div></div>
+    </div>
+  `).join("") || '<div class="item"><span class="muted">Sin cotizaciones este mes</span></div>';
+  // Historial (pestaña)
+  $("#historial-quotes").innerHTML = quotes.slice().reverse().map(q=>`
+    <div class="item"><div><b>${q.cliente}</b> — ${q.desc}<br><span class="muted">${new Date(q.fecha).toLocaleDateString()}</span></div><div>${money(q.total)}</div></div>
+  `).join("") || '<div class="item"><span class="muted">Vacío</span></div>';
+  // Serie mensual 12m
+  const ser = Array.from({length:12}).map((_,i)=>{
+    const d = new Date(); d.setMonth(d.getMonth()- (11-i));
+    return quotes.filter(q=>{
+      const dq = new Date(q.fecha); return dq.getMonth()===d.getMonth() && dq.getFullYear()===d.getFullYear();
+    }).reduce((a,q)=>a+q.total,0);
+  });
+  drawLine($("#chart-quotes"), ser, {label:"Ventas"});
+}
+
+/* ===================== RENDIMIENTO ===================== */
+function seedPerf(){
+  const arr = Array.from({length:12},()=>Math.round(2000+Math.random()*6000));
+  const mants = Math.round(40+Math.random()*30);
+  $("#kpi-mants").textContent = mants;
+  $("#kpi-ingresos").textContent = money(arr.slice(-1)[0]);
+  $("#kpi-ef").textContent = (80+Math.round(Math.random()*20))+"%";
+  $("#r-tickets").textContent = 120+Math.round(Math.random()*60);
+  $("#r-tiempo").textContent = (2+Math.random()*1.5).toFixed(1)+" h";
+  $("#r-nps").textContent = 70+Math.round(Math.random()*20);
+  drawLine($("#chart-perf"), arr, {label:"Ingresos"});
+  drawLine($("#chart-rend"), arr.map(v=>Math.round(v*0.8+Math.random()*400)), {label:"Índice"});
+  $("#r-notas").value = LS.get("oasisNotas") || "";
+  $("#r-notas").addEventListener("input", ()=>LS.set("oasisNotas", $("#r-notas").value));
+}
+
+/* ===================== GRAFICADOR CANVAS MUY LIGERO ===================== */
+function drawLine(canvas, series, opt={}){
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  // fondo
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,"rgba(0,194,255,.22)"); g.addColorStop(1,"rgba(0,194,255,0)");
+  // escalas
+  const max = Math.max(...series, 1);
+  const min = Math.min(...series, 0);
+  const pad = 12;
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#39a8ff";
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  series.forEach((v,i)=>{
+    const x = pad + i*( (W-2*pad) / (series.length-1) );
+    const y = H - pad - ( (v-min)/(max-min) )*(H-2*pad);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  // área
+  ctx.lineTo(W-pad, H-pad);
+  ctx.lineTo(pad, H-pad);
+  ctx.closePath();
+  ctx.fill();
+}
+
+/* ===================== RENDER INICIAL + SEED DATA ===================== */
+function seedDemoData(){
+  if(!quotes.length){
+    addQuote("Alexandra Robles", "Instalación 24k BTU + tubería", 8200, true);
+    addQuote("Henry Berges", "Mantenimiento profundo 12k + limpieza", 350, false);
+    addQuote("Cristina Aponte", "Reemplazo board condensador (garantía)", 0, false);
+  }
+  if(!citas.length){
+    const d = new Date(); const iso = d.toISOString().slice(0,10);
+    citas.push({fecha:iso, hora:"09:00", cliente:"Cristina Aponte", servicio:"Diagnóstico NTC", notas:"Metropolis"});
+    const d2 = new Date(); d2.setDate(d2.getDate()+2);
+    citas.push({fecha:d2.toISOString().slice(0,10), hora:"13:30", cliente:"Alexandra Robles", servicio:"Instalación 24k", notas:""});
+    LS.set("oasisAppointments", citas);
+  }
+}
+function renderCalendarios(){
+  pintarMes(calDate, $("#cal-grid"), $("#cal-title"), (d)=>{ formNuevaCita(d.toISOString().slice(0,10)); });
+  pintarMes(calDate2, $("#cal-grid-2"), $("#cal-title-2"), (d)=>{ pintarCitasDia(d); });
+  pintarCitasDia(new Date());
+}
+function renderTodo(){
+  renderQuotes();
+  renderCalendarios();
+}
+seedDemoData();
+seedPerf();
+renderTodo();
+</script>
+</body>
+</html>
